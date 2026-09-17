@@ -78,38 +78,39 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 
 ## 🔗 Dependency matrix
 
-`lc#` = `lumen-cli`, `cl#` = `create-lumen`. "Enables" lists the issues
+References use `repo#issue` — e.g. `lumen-cli#3`, `create-lumen#13`.
+A bare `#N` means the same repo as the row. "Enables" lists the issues
 that cannot start until the row lands.
 
 | Issue | Depends on | Enables |
 |-------|------------|---------|
-| lc#1  | — | lc#2, lc#3 |
-| lc#2  | lc#1 | lc#4, lc#5 |
-| lc#3  | lc#1, cl#9, cl#13 | lc#4, lc#5, lc#7, lc#20 |
-| lc#4  | lc#2, lc#3 | — |
-| lc#5  | lc#2, lc#3, cl M1 | lc#6 |
-| lc#6  | lc#5 | — |
-| lc#7  | lc#3 | lc#8, #11–#14, #17, #20, #21 |
-| lc#8  | lc#7 | — |
-| lc#9  | lc#7, cl#33 | lc#10 |
-| lc#10 | lc#9 | — |
-| lc#11 | lc#7 | — |
-| lc#12 | lc#7 | — |
-| lc#13 | lc#7 | — |
-| lc#14 | lc#7 | — |
-| lc#24 | — (external `documentador`) | lc#16 |
-| lc#16 | lc#24 | lc#15, #17, #18, #19, #25 |
-| lc#15 | lc#16 | — |
-| lc#17 | lc#16, lc#7 | — |
-| lc#18 | lc#16 | — |
-| lc#19 | lc#16 | — |
-| lc#25 | lc#16 | — |
-| lc#20 | lc#3, lc#7 | — |
-| lc#21 | lc#7 | — |
-| lc#22 | lc#1–#21 | `v1.0.0` |
+| lumen-cli#1  | — | lumen-cli#2, lumen-cli#3 |
+| lumen-cli#2  | lumen-cli#1 | lumen-cli#4, lumen-cli#5 |
+| lumen-cli#3  | lumen-cli#1, create-lumen#9, create-lumen#13 | lumen-cli#4, lumen-cli#5, lumen-cli#7, lumen-cli#20 |
+| lumen-cli#4  | lumen-cli#2, lumen-cli#3 | — |
+| lumen-cli#5  | lumen-cli#2, lumen-cli#3, cl M1 | lumen-cli#6 |
+| lumen-cli#6  | lumen-cli#5 | — |
+| lumen-cli#7  | lumen-cli#3 | lumen-cli#8, #11–#14, #17, #20, #21 |
+| lumen-cli#8  | lumen-cli#7 | — |
+| lumen-cli#9  | lumen-cli#7, create-lumen#33 | lumen-cli#10 |
+| lumen-cli#10 | lumen-cli#9 | — |
+| lumen-cli#11 | lumen-cli#7 | — |
+| lumen-cli#12 | lumen-cli#7 | — |
+| lumen-cli#13 | lumen-cli#7 | — |
+| lumen-cli#14 | lumen-cli#7 | — |
+| lumen-cli#24 | — (external `documentador`) | lumen-cli#16 |
+| lumen-cli#16 | lumen-cli#24 | lumen-cli#15, #17, #18, #19, #25 |
+| lumen-cli#15 | lumen-cli#16 | — |
+| lumen-cli#17 | lumen-cli#16, lumen-cli#7 | — |
+| lumen-cli#18 | lumen-cli#16 | — |
+| lumen-cli#19 | lumen-cli#16 | — |
+| lumen-cli#25 | lumen-cli#16 | — |
+| lumen-cli#20 | lumen-cli#3, lumen-cli#7 | — |
+| lumen-cli#21 | lumen-cli#7 | — |
+| lumen-cli#22 | lumen-cli#1–#21 | `v1.0.0` |
 
-Cross-repo: **lc#3** needs `cl#9` + `cl#13`; **lc#5** needs
-`create-lumen` M1; **lc#9** needs `cl#33`.
+Cross-repo: **lumen-cli#3** needs `create-lumen#9` + `create-lumen#13`; **lumen-cli#5** needs
+`create-lumen` M1; **lumen-cli#9** needs `create-lumen#33`.
 
 ---
 
@@ -117,13 +118,13 @@ Cross-repo: **lc#3** needs `cl#9` + `cl#13`; **lc#5** needs
 
 | Lane | Workstream | Issues | Starts after | Parallel with |
 |------|------------|--------|--------------|---------------|
-| C | lumen-cli skeleton | lc#1, lc#2 | now | A, B, D, G |
-| D | docs-engine base (port `documentador`) | lc#24, lc#16 | now | A, B, C, G |
-| H | generators | lc#7, lc#8, #11–#14 | after C + `cl#9` | F, I, J, K |
-| I | UI registry | lc#9, lc#10 | after H + `cl#33` | F, J, K |
-| J | docs engine features | lc#15, #17, #18, #19, #25 | after D | F, H, K |
-| K | doctor / barrels | lc#20, lc#21 | after H | F, J |
-| L | release & docs | lc#22 | at close | — |
+| C | lumen-cli skeleton | lumen-cli#1, lumen-cli#2 | now | A, B, D, G |
+| D | docs-engine base (port `documentador`) | lumen-cli#24, lumen-cli#16 | now | A, B, C, G |
+| H | generators | lumen-cli#7, lumen-cli#8, #11–#14 | after C + `create-lumen#9` | F, I, J, K |
+| I | UI registry | lumen-cli#9, lumen-cli#10 | after H + `create-lumen#33` | F, J, K |
+| J | docs engine features | lumen-cli#15, #17, #18, #19, #25 | after D | F, H, K |
+| K | doctor / barrels | lumen-cli#20, lumen-cli#21 | after H | F, J |
+| L | release & docs | lumen-cli#22 | at close | — |
 
 Full cross-project view (lanes A–L, 4 devs) is in
 [`docs/PLAN.md`](./docs/PLAN.md).
