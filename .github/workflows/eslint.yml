@@ -1,0 +1,55 @@
+name: ESLint
+
+on:
+  push:
+    branches: [ "main", "develop", "release/**", "hotfix/**" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  eslint:
+    name: Run eslint scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: |
+          if [ -f "eslint.config.js" ] || [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ]; then
+            npx eslint .
+          else
+            echo "::notice::No ESLint config yet (M1 #1 pending); skipping."
+          fi
+
+      - name: Generate SARIF report
+        if: always()
+        env:
+          SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
+        run: |
+          if [ -f "eslint.config.js" ] || [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ]; then
+            npx eslint . \
+              --format @microsoft/eslint-formatter-sarif \
+              --output-file eslint-results.sarif || true
+          else
+            echo "::notice::No ESLint config; skip SARIF."
+          fi
+
+      - name: Upload analysis results to GitHub
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: eslint-results.sarif
+          wait-for-processing: true

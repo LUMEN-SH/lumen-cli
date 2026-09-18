@@ -1,0 +1,125 @@
+name: Publish to npm
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      stable: ${{ steps.check.outputs.stable }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Ensure npm supports OIDC trusted publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: |
+          if [ -f "package.json" ] && npm run | grep -q "test"; then
+            npm test
+          else
+            echo "::notice::No test script yet (M1 #1 pending); skipping."
+          fi
+
+      - name: Determine publish eligibility
+        id: check
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "::notice::No package.json yet (bootstrap pending); skip publish."
+            echo "version=" >> "$GITHUB_OUTPUT"
+            echo "stable=false" >> "$GITHUB_OUTPUT"
+            echo "publishable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Dist-tag for npm (see ADR 0002): alpha/beta/rc use prerelease tags, stable uses latest
+          case "$VERSION" in
+            *"-alpha."*)
+              echo "stable=false" >> "$GITHUB_OUTPUT"
+              echo "dist_tag=alpha" >> "$GITHUB_OUTPUT"
+              ;;
+            *"-beta."*|*"-beta"*)
+              echo "stable=false" >> "$GITHUB_OUTPUT"
+              echo "dist_tag=beta" >> "$GITHUB_OUTPUT"
+              ;;
+            *"-rc."*)
+              echo "stable=false" >> "$GITHUB_OUTPUT"
+              echo "dist_tag=rc" >> "$GITHUB_OUTPUT"
+              ;;
+            *"-"*)
+              echo "stable=false" >> "$GITHUB_OUTPUT"
+              echo "dist_tag=next" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "stable=true" >> "$GITHUB_OUTPUT"
+              echo "dist_tag=latest" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+          if npm view "lumen-cli@$VERSION" version >/dev/null 2>&1; then
+            echo "publishable=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::lumen-cli@$VERSION is already published on npm; publish skipped."
+          else
+            echo "publishable=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to npm (stable -> latest, prerelease -> dist-tag)
+        if: steps.check.outputs.publishable == 'true'
+        run: |
+          if [ "${{ steps.check.outputs.stable }}" = "true" ]; then
+            npm publish --provenance --access public
+          else
+            npm publish --provenance --access public --tag "${{ steps.check.outputs.dist_tag }}"
+          fi
+
+  release:
+    needs: publish
+    if: needs.publish.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ needs.publish.outputs.version }}"
+          STABLE="${{ needs.publish.outputs.stable }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::notice::GitHub Release $TAG already exists; skipping."
+          else
+            if [ "$STABLE" = "true" ]; then
+              gh release create "$TAG" --title "$TAG" --generate-notes
+            else
+              gh release create "$TAG" --title "$TAG" --generate-notes --prerelease
+            fi
+          fi
