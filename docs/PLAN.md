@@ -74,6 +74,8 @@ flowchart TD
         LumenCli25["lumen-cli#25 · co-located docs"]
         LumenCli20["lumen-cli#20 · doctor"]
         LumenCli21["lumen-cli#21 · sync-barrels"]
+        LumenCli22["lumen-cli#22 · docs: README + command ref"]
+        LumenCli23["lumen-cli#23 · backlog v1.0.0 (umbrella)"]
 
         LumenCli1 --> LumenCli2
         LumenCli2 --> LumenCli3 --> LumenCli7
@@ -94,6 +96,8 @@ flowchart TD
         LumenCli16 --> LumenCli18
         LumenCli16 --> LumenCli19
         LumenCli16 --> LumenCli25
+        LumenCli21 --> LumenCli22
+        LumenCli21 --> LumenCli23
     end
 
     subgraph CLEX["create-lumen v2 (external)"]
@@ -119,7 +123,7 @@ Everything in a wave can run at the same time; lanes are shared with
 flowchart TB
     subgraph W0["🌊 Wave 0 — start now (fully parallel)"]
         direction LR
-        LaneA["Lane A<br/>create-lumen manifest core<br/>create-lumen#13 #14 #15 #16 #4"]
+        LaneA["Lane A<br/>create-lumen manifest core<br/>create-lumen#13 #14 #15 #16 #4<br/>#9 #25 ✅ unblocked (#13)<br/>#17 #29 ✅ unblocked (#16)"]
         LaneB["Lane B<br/>create-lumen templates / tooling<br/>create-lumen#6 #24"]
         LaneC["Lane C<br/>lumen-cli skeleton<br/>lumen-cli#1 #2"]
         LaneD["Lane D<br/>lumen-cli docs-engine port<br/>lumen-cli#24 #16"]

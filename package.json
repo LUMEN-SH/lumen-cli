@@ -1,0 +1,42 @@
+{
+  "name": "lumen-cli",
+  "version": "1.0.0-alpha.0",
+  "description": "Day-to-day CLI for Lumen projects",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "lumen": "bin/lumen.js",
+    "lm": "bin/lumen.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "lumen",
+    "cli",
+    "generators",
+    "framework"
+  ],
+  "author": "Lumen Team",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@microsoft/eslint-formatter-sarif": "^3.1.0",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
+    "vitest": "^2.1.1"
+  }
+}

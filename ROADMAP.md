@@ -107,7 +107,8 @@ that cannot start until the row lands.
 | lumen-cli#25 | lumen-cli#16 | — |
 | lumen-cli#20 | lumen-cli#3, lumen-cli#7 | — |
 | lumen-cli#21 | lumen-cli#7 | — |
-| lumen-cli#22 | lumen-cli#1–#21 | `v1.0.0` |
+| lumen-cli#22 | lumen-cli#1–#21 | `v1.0.0` ⏳ Blocked |
+| lumen-cli#23 | (backlog) | (backlog) | ⏳ Icebox — no milestone |
 
 Cross-repo: **lumen-cli#3** needs `create-lumen#9` + `create-lumen#13`; **lumen-cli#5** needs
 `create-lumen` M1; **lumen-cli#9** needs `create-lumen#33`.
