@@ -28,7 +28,7 @@
     "framework"
   ],
   "author": "Lumen Team",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "dependencies": {
     "commander": "^12.1.0"
   },
