@@ -13,8 +13,8 @@ describe('lumen-cli bootstrap', () => {
     expect(pkg.type).toBe('module');
     expect(pkg.version).toBeDefined();
     expect(pkg.bin).toEqual({
-      lumen: './bin/lumen.js',
-      lm: './bin/lumen.js',
+      lumen: 'bin/lumen.js',
+      lm: 'bin/lumen.js',
     });
   });
 
