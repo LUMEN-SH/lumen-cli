@@ -27,6 +27,37 @@ Commands also provide short aliases:
 
 - `generate` alias: `g` (`lumen g` or `lm g`)
 
+## Commands
+
+### `lumen create [name]`
+
+Create a new Lumen project by delegating to `create-lumen`:
+
+```bash
+lumen create my-app
+lumen create my-app -y
+lumen create my-app --template react-ts
+lumen create my-app --arch feature-based
+lumen create my-app --manifest ./lumen.config.json
+```
+
+**Options:**
+- `-y, --yes` — Quick setup with recommended defaults
+- `-m, --manifest <file-or-json>` — Manifest file path or inline JSON
+- `-t, --template <preset>` — Template preset (e.g. `react-ts`, `react-js`, `react-type-ts`, etc.)
+- `-f, --framework <name>` — Target framework
+- `-a, --arch <arch>` / `--architecture <arch>` — Architecture preset (`feature-based`, `type-based`, `none`, `hybrid`)
+
+### `lumen init`
+
+Initialize a Lumen project in the current directory (or prompt for name interactively):
+
+```bash
+lumen init
+lumen init -y
+lumen init --template react-ts
+```
+
 ### Global Options
 
 - `-c, --cwd <dir>` — Working directory

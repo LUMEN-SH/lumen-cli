@@ -1,0 +1,90 @@
+import { runScaffolder } from '../scaffolder.js';
+
+function buildForwardArgs(name, options) {
+  const args = [];
+
+  if (name) {
+    args.push(name);
+  }
+
+  if (options.yes) {
+    args.push('--yes');
+  }
+
+  if (options.manifest) {
+    args.push('--manifest', options.manifest);
+  }
+
+  if (options.template) {
+    args.push('--template', options.template);
+  }
+
+  if (options.framework) {
+    args.push('--framework', options.framework);
+  }
+
+  const arch = options.arch || options.architecture;
+  if (arch) {
+    args.push('--arch', arch);
+  }
+
+  return args;
+}
+
+export function registerCreate(program) {
+  program
+    .command('create [name]')
+    .description('Create a new Lumen project')
+    .option('-y, --yes', 'quick setup with recommended defaults')
+    .option('-m, --manifest <file-or-json>', 'manifest path or inline JSON')
+    .option('-t, --template <preset>', 'template preset name')
+    .option('-f, --framework <name>', 'target framework')
+    .option('-a, --arch <arch>', 'architecture preset')
+    .option('--architecture <arch>', 'architecture preset (alias for --arch)')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ lumen create my-app
+  $ lumen create my-app -y
+  $ lumen create my-app --template react-ts
+  $ lumen create my-app --arch feature-based
+  $ lumen create my-app --manifest ./lumen.config.json`
+    )
+    .action(async (name, options) => {
+      const globalOpts = program.opts ? program.opts() : {};
+      const cwd = globalOpts.cwd || process.cwd();
+      const forwardArgs = buildForwardArgs(name, options);
+      const exitCode = await runScaffolder(forwardArgs, { cwd });
+      process.exitCode = exitCode;
+    });
+
+  program
+    .command('init')
+    .description('Initialize a Lumen project in current directory')
+    .option('-y, --yes', 'quick setup with recommended defaults')
+    .option('-m, --manifest <file-or-json>', 'manifest path or inline JSON')
+    .option('-t, --template <preset>', 'template preset name')
+    .option('-f, --framework <name>', 'target framework')
+    .option('-a, --arch <arch>', 'architecture preset')
+    .option('--architecture <arch>', 'architecture preset (alias for --arch)')
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ lumen init
+  $ lumen init -y
+  $ lumen init --template react-ts
+  $ lumen init --arch feature-based
+  $ lumen init --manifest ./lumen.config.json`
+    )
+    .action(async (options) => {
+      const globalOpts = program.opts ? program.opts() : {};
+      const cwd = globalOpts.cwd || process.cwd();
+      const forwardArgs = buildForwardArgs(null, options);
+      const exitCode = await runScaffolder(forwardArgs, { cwd });
+      process.exitCode = exitCode;
+    });
+
+  return program;
+}
