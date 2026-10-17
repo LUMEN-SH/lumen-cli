@@ -134,5 +134,74 @@ describe('create and init commands', () => {
         { cwd: process.cwd() }
       );
     });
+
+    it('forwards tooling flags as an inline --manifest in create', async () => {
+      const program = createCli().exitOverride();
+      await program.parseAsync([
+        'node',
+        'lumen',
+        'create',
+        'tooling-app',
+        '-y',
+        '--linter',
+        'oxlint',
+        '--formatter',
+        'oxfmt',
+      ]);
+
+      expect(runScaffolderSpy).toHaveBeenCalledTimes(1);
+      const callArgs = runScaffolderSpy.mock.calls[0][0];
+      expect(callArgs[0]).toBe('tooling-app');
+      expect(callArgs).toContain('--yes');
+      const manifestIndex = callArgs.indexOf('--manifest');
+      expect(manifestIndex).toBeGreaterThan(-1);
+
+      const manifestJson = callArgs[manifestIndex + 1];
+      const parsed = JSON.parse(manifestJson);
+      expect(parsed.manifestVersion).toBe(2);
+      expect(parsed.tooling.linter).toBe('oxlint');
+      expect(parsed.tooling.formatter).toBe('oxfmt');
+    });
+
+    it('forwards tooling flags as inline manifest in init', async () => {
+      const program = createCli().exitOverride();
+      await program.parseAsync([
+        'node',
+        'lumen',
+        'init',
+        '-y',
+        '--language',
+        'js',
+        '--styling',
+        'none',
+      ]);
+
+      expect(runScaffolderSpy).toHaveBeenCalledTimes(1);
+      const callArgs = runScaffolderSpy.mock.calls[0][0];
+      expect(callArgs).toContain('--yes');
+      const manifestIndex = callArgs.indexOf('--manifest');
+      expect(manifestIndex).toBeGreaterThan(-1);
+
+      const manifestJson = callArgs[manifestIndex + 1];
+      const parsed = JSON.parse(manifestJson);
+      expect(parsed.tooling.language).toBe('js');
+      expect(parsed.styling.engine).toBe('none');
+    });
+
+    it('fails before spawning if a tooling flag value is invalid', async () => {
+      const program = createCli().exitOverride();
+      await expect(
+        program.parseAsync([
+          'node',
+          'lumen',
+          'create',
+          'invalid-app',
+          '--linter',
+          'invalid-linter',
+        ])
+      ).rejects.toThrow('Invalid linter "invalid-linter"');
+
+      expect(runScaffolderSpy).not.toHaveBeenCalled();
+    });
   });
 });

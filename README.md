@@ -39,6 +39,7 @@ lumen create my-app -y
 lumen create my-app --template react-ts
 lumen create my-app --arch feature-based
 lumen create my-app --manifest ./lumen.config.json
+lumen create my-app -y --linter oxlint --formatter oxfmt
 ```
 
 **Options:**
@@ -47,6 +48,13 @@ lumen create my-app --manifest ./lumen.config.json
 - `-t, --template <preset>` — Template preset (e.g. `react-ts`, `react-js`, `react-type-ts`, etc.)
 - `-f, --framework <name>` — Target framework
 - `-a, --arch <arch>` / `--architecture <arch>` — Architecture preset (`feature-based`, `type-based`, `none`, `hybrid`)
+- `--linter <eslint|oxlint|biome|none>` — Linting tool
+- `--formatter <prettier|oxfmt|none>` — Code formatter
+- `--language <ts|js>` — Project language
+- `--styling <tailwind|none>` — Styling engine
+- `--ui <shadcn|none>` — UI component kit (requires `--styling tailwind`)
+
+When tooling flags are supplied, `lumen` builds and validates an inline manifest and passes it to the scaffolder via `--manifest`. If combined with an existing manifest (`-m`), flags take precedence over the base manifest values.
 
 ### `lumen init`
 
@@ -56,7 +64,10 @@ Initialize a Lumen project in the current directory (or prompt for name interact
 lumen init
 lumen init -y
 lumen init --template react-ts
+lumen init -y --linter oxlint --formatter oxfmt
 ```
+
+Supports the same options as `lumen create`.
 
 ### Global Options
 
@@ -136,7 +147,6 @@ lumen config validate
 - **Path Mapping**: Generator destinations are resolved dynamically from `manifest.paths` (`paths.features`, `paths.components`, `paths.services`, `paths.hooks`, `paths.pages`, `paths.ui`), respecting architectural presets (`feature-based`, `type-based`, `hybrid`, `none`) without hardcoding paths.
 - **Language Detection**: Automatically matches template variants (`.ts`/`.tsx` vs `.js`/`.jsx`) against `tooling.language`.
 - **Safe Containment**: All generated targets are strictly checked to resolve within the project root, guarding against path traversal attempts.
-- **Collision Protection**: Existing files are never silently clobbered; the engine skips them by default unless `--force` is specified.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
 
 ### `lumen generate service <name>` (alias: `lumen g service <name>`)
@@ -162,6 +172,71 @@ lumen g service session --force -j
 The generator inspects the target project's `package.json` dependencies:
 - **Axios**: If `axios` is in dependencies, the generator scans common project locations (such as `src/shared/lib/axios`, `src/lib/api`, or `src/api/client`) for an Axios instance to import with a relative path; if no custom instance is detected, it falls back to an `axios` import with a TODO hint.
 - **Fetch**: If Axios is not found, it checks for a custom API client module (e.g. `src/shared/lib/api` or `src/lib/api`). If none is present, standard `fetch` is used with a configurable `BASE_URL`.
+
+### `lumen generate store <name>`
+
+Generates an application state store tailored to your project's state library (automatically detected from `package.json`):
+- **`zustand`**: Typed store hook `use<Name>Store` with actions, state, and optional `--persist` middleware.
+- **`@reduxjs/toolkit`**: Redux slice (`createSlice`), exported actions, and typed hook integration guide.
+- **Default (none)**: Fast Refresh compliant React Context, Provider (`<Name>Provider`), and custom hook (`use<Name>()`) across separate files with a barrel export.
+
+```bash
+# Generate shared store (derived from paths.services: <dirname>/stores)
+lumen g store auth
+
+# Generate zustand store with persistence middleware
+lumen g store settings --persist
+
+# Generate feature-scoped store (paths.features/<feature>/store)
+lumen g store checkout --feature cart
+
+# Preview or force overwrite
+lumen g store auth --dry-run
+lumen g store auth --force
+```
+
+**Options:**
+- `--feature <name>` — Generate store within a feature directory (`paths.features/<feature>/store`)
+- `--persist` — Add zustand persist middleware (valid only when `zustand` is detected)
+- `--dry-run` — Preview generation plan without writing to disk
+- `--force` — Overwrite existing files
+
+### `lumen generate form <name>`
+
+Generate a validated React Hook Form component and matching Zod schema (`<Name>Form.tsx` and `<name>.schema.ts`, or JS equivalents):
+
+```bash
+lumen g form user-profile
+lumen g form login --feature auth
+lumen g form checkout --feature billing --service checkout
+lumen g form contact --dry-run
+```
+
+**Options:**
+- `--feature <feature>` — Place form under a feature module (`paths.features/<feature>/components`)
+- `--service <service>` — Wire `onSubmit` to a service module import
+- `--dry-run` — Preview file creations without writing to disk
+- `-f, --force` — Overwrite existing files
+- `-j, --json` — Output result as JSON
+
+
+### `lumen generate feature <name>`
+
+Generates a domain feature module under `paths.features/<name>/` complete with `components/`, `hooks/`, `services/`, `types/`, and a public barrel export (`index.ts` / `index.js`).
+
+```bash
+lumen generate feature billing
+lumen g feature auth --dry-run
+lumen g feature checkout --with-tests
+lumen g feature dashboard --force
+```
+
+**Options:**
+- `--dry-run` — Preview file generation actions without modifying the filesystem
+- `--force` — Overwrite existing files instead of skipping
+- `--with-tests` — Generate starter `<Name>.test.tsx` / `<Name>.test.jsx` test if project uses `vitest`
+- `--with-store` — Hint to generate associated state store (`lumen g store <name>`)
+- `--with-service` — Hint to generate associated API service (`lumen g service <name>`)
 
 ## Documentation & Roadmap
 
