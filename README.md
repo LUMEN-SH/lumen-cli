@@ -139,6 +139,30 @@ lumen config validate
 - **Collision Protection**: Existing files are never silently clobbered; the engine skips them by default unless `--force` is specified.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
 
+### `lumen generate service <name>` (alias: `lumen g service <name>`)
+
+Generates a typed CRUD service client (`get`, `getById`, `create`, `update`, `delete`) destination resolved from `manifest.paths.services` (or scoped into `paths.features/<featureName>/services` when `--feature` is specified).
+
+```bash
+lumen g service user
+lumen g service order --paginated
+lumen g service billing --feature subscription
+lumen g service product --with-mocks --dry-run
+lumen g service session --force -j
+```
+
+**Options:**
+- `--feature <featureName>` — Generate service scoped inside feature directory (`paths.features/<featureName>/services`). Fails with error if the architecture preset does not support features (e.g. `none`).
+- `--paginated` — Generate pagination query parameters and `PageResult<T>` wrapper for list operations.
+- `--with-mocks` — Emit `<name>.mocks.ts` (or `.js`) fixture file with mock records.
+- `--dry-run` — Preview planned file actions without modifying the filesystem.
+- `--force` — Overwrite existing service and mock files.
+
+**HTTP Client Detection:**
+The generator inspects the target project's `package.json` dependencies:
+- **Axios**: If `axios` is in dependencies, the generator scans common project locations (such as `src/shared/lib/axios`, `src/lib/api`, or `src/api/client`) for an Axios instance to import with a relative path; if no custom instance is detected, it falls back to an `axios` import with a TODO hint.
+- **Fetch**: If Axios is not found, it checks for a custom API client module (e.g. `src/shared/lib/api` or `src/lib/api`). If none is present, standard `fetch` is used with a configurable `BASE_URL`.
+
 ## Documentation & Roadmap
 
 
