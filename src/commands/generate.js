@@ -1,3 +1,5 @@
+import { registerGenerators } from './generate/index.js';
+
 export function registerGenerate(program) {
   const generate = program
     .command('generate')
@@ -13,6 +15,8 @@ Examples:
     .action(() => {
       generate.help();
     });
+
+  registerGenerators(generate);
 
   return generate;
 }
