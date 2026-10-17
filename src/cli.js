@@ -1,5 +1,7 @@
 import { Command } from 'commander';
 import { readFileSync } from 'node:fs';
+import { registerCommands } from './commands/index.js';
+import { LumenError, EXIT } from './errors.js';
 
 export function getPackageJson() {
   const pkgPath = new URL('../package.json', import.meta.url);
@@ -15,12 +17,75 @@ export function createCli() {
     .name('lumen')
     .description('Day-to-day CLI for Lumen projects')
     .version(pkg.version, '-V, --version', 'output the version number')
-    .helpOption('-h, --help', 'display help for command');
+    .helpOption('-h, --help', 'display help for command')
+    .option('-c, --cwd <dir>', 'working directory')
+    .option('-v, --verbose', 'enable verbose output')
+    .option('-j, --json', 'output in JSON format')
+    .option('--no-color', 'disable colored output')
+    .showSuggestionAfterError(true)
+    .addHelpText(
+      'after',
+      `
+Examples:
+  $ lumen --help
+  $ lumen -V
+  $ lumen generate --help
+  $ lumen g --help`
+    )
+    .action((options, command) => {
+      if (command.args.length > 0) {
+        command.unknownCommand();
+      }
+    });
+
+  registerCommands(program);
 
   return program;
 }
 
+function handleLumenError(err, program, argv) {
+  const opts = program.opts ? program.opts() : {};
+  const isJson = opts.json || (Array.isArray(argv) && (argv.includes('--json') || argv.includes('-j')));
+
+  if (isJson) {
+    const payload = {
+      error: err.message,
+      code: err.code,
+    };
+    if (err.hint) {
+      payload.hint = err.hint;
+    }
+    process.stderr.write(`${JSON.stringify(payload)}\n`);
+  } else {
+    process.stderr.write(`Error: ${err.message}\n`);
+    if (err.hint) {
+      process.stderr.write(`Hint: ${err.hint}\n`);
+    }
+  }
+  process.exitCode = err.code ?? EXIT.USER;
+}
+
 export function runCli(argv = process.argv) {
   const program = createCli();
-  return program.parse(argv);
+
+  try {
+    const result = program.parse(argv);
+    if (result && typeof result.catch === 'function') {
+      result.catch((err) => {
+        if (err instanceof LumenError) {
+          handleLumenError(err, program, argv);
+        } else {
+          throw err;
+        }
+      });
+    }
+    return program;
+  } catch (err) {
+    if (err instanceof LumenError) {
+      handleLumenError(err, program, argv);
+      return program;
+    }
+
+    throw err;
+  }
 }
