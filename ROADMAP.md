@@ -23,8 +23,8 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 > project.
 
 - [x] #1 Bootstrap lumen-cli package (ESM, bin, CI, publish)
-- [~] #2 Command framework + per-command help/version
-- [ ] #3 Config reader: Zod schema v2 + strict v1 rejection
+- [x] #2 Command framework + per-command help/version
+- [x] #3 Config reader: Zod schema v2 + strict v1 rejection
 - [ ] #4 `lumen config` command
 - [ ] #5 `lumen create` / `lumen init` delegate to `create-lumen@^2`
 - [ ] #6 Forward tooling flags to the scaffolder
