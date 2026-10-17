@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createCli, runCli, getPackageJson } from '../src/cli.js';
+import * as commandsModule from '../src/commands/index.js';
+import { LumenError, EXIT } from '../src/errors.js';
 
 describe('lumen-cli bootstrap', () => {
   let pkg;
@@ -27,6 +29,39 @@ describe('lumen-cli bootstrap', () => {
   it('runCli creates and parses program', () => {
     const program = runCli(['node', 'lumen']);
     expect(program.name()).toBe('lumen');
+  });
+
+  describe('Global options', () => {
+    it('registers and parses global flags correctly', () => {
+      const program = createCli().exitOverride();
+      program.parse(['node', 'lumen', '-c', 'custom/dir', '-v', '-j', '--no-color']);
+      const opts = program.opts();
+
+      expect(opts.cwd).toBe('custom/dir');
+      expect(opts.verbose).toBe(true);
+      expect(opts.json).toBe(true);
+      expect(opts.color).toBe(false);
+    });
+
+    it('distinguishes -V (version) and -v (verbose)', () => {
+      const progVerbose = createCli().exitOverride();
+      progVerbose.parse(['node', 'lumen', '-v']);
+      expect(progVerbose.opts().verbose).toBe(true);
+
+      const progVersion = createCli().exitOverride();
+      let versionOutput = '';
+      vi.spyOn(process.stdout, 'write').mockImplementation((str) => {
+        versionOutput += str;
+        return true;
+      });
+      try {
+        progVersion.parse(['node', 'lumen', '-V']);
+      } catch {
+        // expected Commander exit override
+      }
+      expect(versionOutput.trim()).toBe(pkg.version);
+      vi.restoreAllMocks();
+    });
   });
 
   describe('CLI help and version output', () => {
@@ -66,6 +101,11 @@ describe('lumen-cli bootstrap', () => {
       expect(output).toContain('Usage: lumen [options]');
       expect(output).toContain('-h, --help');
       expect(output).toContain('-V, --version');
+      expect(output).toContain('-c, --cwd <dir>');
+      expect(output).toContain('-v, --verbose');
+      expect(output).toContain('-j, --json');
+      expect(output).toContain('--no-color');
+      expect(output).toContain('Examples:');
     });
 
     it('outputs help text when called with -h', () => {
@@ -178,6 +218,140 @@ describe('lumen-cli bootstrap', () => {
 
       expect(exitCode).toBe(0);
       expect(output).toContain('Usage: lumen [options]');
+    });
+  });
+
+  describe('Commands and error handling', () => {
+    let stderrOutput = '';
+
+    beforeEach(() => {
+      stderrOutput = '';
+      process.exitCode = undefined;
+
+      vi.spyOn(process.stderr, 'write').mockImplementation((str) => {
+        stderrOutput += str;
+        return true;
+      });
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      process.exitCode = undefined;
+    });
+
+    it('generate command and alias g display identical help and include examples', () => {
+      const progGen = createCli().exitOverride();
+      let genHelp = '';
+      vi.spyOn(process.stdout, 'write').mockImplementation((str) => {
+        genHelp += str;
+        return true;
+      });
+      try {
+        progGen.parse(['node', 'lumen', 'generate', '--help']);
+      } catch {
+        // expected Commander exit override
+      }
+
+      const progG = createCli().exitOverride();
+      let gHelp = '';
+      vi.spyOn(process.stdout, 'write').mockImplementation((str) => {
+        gHelp += str;
+        return true;
+      });
+      try {
+        progG.parse(['node', 'lumen', 'g', '-h']);
+      } catch {
+        // expected Commander exit override
+      }
+
+      expect(gHelp).toBe(genHelp);
+      expect(genHelp).toContain('Usage: lumen generate|g [options]');
+      expect(genHelp).toContain('Examples:');
+      expect(genHelp).toContain('$ lumen generate --help');
+      expect(genHelp).toContain('$ lumen g --help');
+    });
+
+    it('g -h equals generate --help output', () => {
+      const progGen = createCli().exitOverride();
+      let genHelp = '';
+      vi.spyOn(process.stdout, 'write').mockImplementation((str) => {
+        genHelp += str;
+        return true;
+      });
+      try {
+        progGen.parse(['node', 'lumen', 'generate', '--help']);
+      } catch {
+        // expected Commander exit override
+      }
+
+      const progG = createCli().exitOverride();
+      let gHelp = '';
+      vi.spyOn(process.stdout, 'write').mockImplementation((str) => {
+        gHelp += str;
+        return true;
+      });
+      try {
+        progG.parse(['node', 'lumen', 'g', '--help']);
+      } catch {
+        // expected Commander exit override
+      }
+
+      expect(gHelp).toBe(genHelp);
+    });
+
+    it('unknown command suggests matching command and exits with code 1', () => {
+      const program = createCli().exitOverride();
+      let exitCode = null;
+
+      try {
+        program.parse(['node', 'lumen', 'generat']);
+      } catch (e) {
+        exitCode = e.exitCode;
+      }
+
+      expect(exitCode).toBe(1);
+      expect(stderrOutput).toContain("error: unknown command 'generat'");
+      expect(stderrOutput).toContain('(Did you mean generate?)');
+    });
+
+    it('runCli catches LumenError, formats plain output, and sets process.exitCode', () => {
+      vi.spyOn(commandsModule, 'registerCommands').mockImplementation((prog) => {
+        prog.command('fail-test').action(() => {
+          throw new LumenError('Bad user parameter', {
+            code: EXIT.USER,
+            hint: 'Specify --target',
+          });
+        });
+        return prog;
+      });
+
+      runCli(['node', 'lumen', 'fail-test']);
+
+      expect(process.exitCode).toBe(1);
+      expect(stderrOutput).toContain('Error: Bad user parameter');
+      expect(stderrOutput).toContain('Hint: Specify --target');
+    });
+
+    it('runCli handles LumenError with --json format', () => {
+      vi.spyOn(commandsModule, 'registerCommands').mockImplementation((prog) => {
+        prog.command('fail-json').action(() => {
+          throw new LumenError('Config parsing failed', {
+            code: EXIT.CONFIG,
+            hint: 'Invalid JSON',
+          });
+        });
+        return prog;
+      });
+
+      runCli(['node', 'lumen', '-j', 'fail-json']);
+
+      expect(process.exitCode).toBe(2);
+      const parsed = JSON.parse(stderrOutput.trim());
+      expect(parsed).toEqual({
+        error: 'Config parsing failed',
+        code: 2,
+        hint: 'Invalid JSON',
+      });
     });
   });
 });

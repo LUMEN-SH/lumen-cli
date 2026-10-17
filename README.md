@@ -23,10 +23,29 @@ lumen --help
 lm --help
 ```
 
-### Options
+Commands also provide short aliases:
 
-- `-h, --help` — Display help for command
+- `generate` alias: `g` (`lumen g` or `lm g`)
+
+### Global Options
+
+- `-c, --cwd <dir>` — Working directory
+- `-v, --verbose` — Enable verbose output
+- `-j, --json` — Output in JSON format
+- `--no-color` — Disable colored output
 - `-V, --version` — Output the version number
+- `-h, --help` — Display help for command
+
+## Exit Codes
+
+`lumen-cli` conforms to standard process exit codes:
+
+| Code | Name | Description |
+|------|------|-------------|
+| `0` | `OK` | Command completed successfully |
+| `1` | `USER` | User error (invalid arguments, flags, or unknown command) |
+| `2` | `CONFIG` | Configuration error (missing or invalid manifest) |
+| `70` | `INTERNAL` | Internal software error |
 
 ## Compatibility
 
