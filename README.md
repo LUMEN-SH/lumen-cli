@@ -32,6 +32,19 @@ lm --help
 
 `lumen-cli` `v1` reads only the `create-lumen` **v2** manifest (`lumen.config.json`, `manifestVersion: 2`, incl. v2.1 `preset`/`validation`/`harness`). Developed against `create-lumen@2.0.0-alpha.2`; v1.x manifests are rejected.
 
+## Config Reader
+
+The CLI discovers and loads the project's configuration from `lumen.config.json`:
+
+```javascript
+import { readConfig, findConfigFile, ConfigError } from 'lumen-cli';
+// or from 'src/config/index.js'
+```
+
+- `findConfigFile(startDir)`: Walks up directory tree searching for `lumen.config.json`.
+- `readConfig({ cwd })`: Locates `lumen.config.json`, parses and validates the manifest against `manifestSchemaV2`, normalizes v2.1 fields (`architecture.preset`, `validation`, `harness.commands`, `agentDocs`), resolves generator paths via `resolvePaths`, and returns `{ manifest, paths, root, file }`.
+- Throws `ConfigError` (code `CONFIG`, exitCode `2`) if the config file is missing, invalid JSON, or fails schema validation. Any legacy v1 manifest is rejected with an actionable migration pointer.
+
 ## Documentation & Roadmap
 
 - [ROADMAP.md](./ROADMAP.md) — Milestone breakdown (M1–M5)
