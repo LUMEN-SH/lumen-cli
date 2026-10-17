@@ -19,7 +19,7 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 > **DoD:** `lumen` installs (ESM/bin), has a command framework with
 > help/version, reads `lumen.config.json` v2/v2.1 (Zod via `create-lumen`, rejects v1),
 > `lumen config` works, and `lumen create` / `lumen init` delegates to
-> `create-lumen@^2`. Result: `npx lumen create my-app` scaffolds a
+> `create-lumen@^2`. Result: `npx lumen-cli create my-app` scaffolds a
 > project.
 
 - [x] #1 Bootstrap lumen-cli package (ESM, bin, CI, publish)
