@@ -65,27 +65,35 @@ function handleLumenError(err, program, argv) {
   process.exitCode = err.code ?? EXIT.USER;
 }
 
+function handleError(err, program, argv) {
+  if (err instanceof LumenError) {
+    handleLumenError(err, program, argv);
+    return;
+  }
+
+  const opts = program.opts ? program.opts() : {};
+  const verbose = opts.verbose || (Array.isArray(argv) && (argv.includes('--verbose') || argv.includes('-v')));
+  const internal = new LumenError(err?.message || String(err), {
+    code: EXIT.INTERNAL,
+    hint: verbose ? undefined : 'Re-run with --verbose for the stack trace.',
+  });
+  handleLumenError(internal, program, argv);
+  if (verbose && err?.stack) {
+    process.stderr.write(`${err.stack}\n`);
+  }
+}
+
+/**
+ * Parses argv and runs the matched command. Returns the program synchronously;
+ * `program.finished` resolves once async actions settle (errors are reported
+ * and mapped to exit codes, never thrown as raw stack traces).
+ */
 export function runCli(argv = process.argv) {
   const program = createCli();
 
-  try {
-    const result = program.parse(argv);
-    if (result && typeof result.catch === 'function') {
-      result.catch((err) => {
-        if (err instanceof LumenError) {
-          handleLumenError(err, program, argv);
-        } else {
-          throw err;
-        }
-      });
-    }
-    return program;
-  } catch (err) {
-    if (err instanceof LumenError) {
-      handleLumenError(err, program, argv);
-      return program;
-    }
+  program.finished = program.parseAsync(argv).catch((err) => {
+    handleError(err, program, argv);
+  });
 
-    throw err;
-  }
+  return program;
 }

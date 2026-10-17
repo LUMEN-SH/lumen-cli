@@ -314,7 +314,7 @@ describe('lumen-cli bootstrap', () => {
       expect(stderrOutput).toContain('(Did you mean generate?)');
     });
 
-    it('runCli catches LumenError, formats plain output, and sets process.exitCode', () => {
+    it('runCli catches LumenError, formats plain output, and sets process.exitCode', async () => {
       vi.spyOn(commandsModule, 'registerCommands').mockImplementation((prog) => {
         prog.command('fail-test').action(() => {
           throw new LumenError('Bad user parameter', {
@@ -325,14 +325,14 @@ describe('lumen-cli bootstrap', () => {
         return prog;
       });
 
-      runCli(['node', 'lumen', 'fail-test']);
+      await runCli(['node', 'lumen', 'fail-test']).finished;
 
       expect(process.exitCode).toBe(1);
       expect(stderrOutput).toContain('Error: Bad user parameter');
       expect(stderrOutput).toContain('Hint: Specify --target');
     });
 
-    it('runCli handles LumenError with --json format', () => {
+    it('runCli handles LumenError with --json format', async () => {
       vi.spyOn(commandsModule, 'registerCommands').mockImplementation((prog) => {
         prog.command('fail-json').action(() => {
           throw new LumenError('Config parsing failed', {
@@ -343,7 +343,7 @@ describe('lumen-cli bootstrap', () => {
         return prog;
       });
 
-      runCli(['node', 'lumen', '-j', 'fail-json']);
+      await runCli(['node', 'lumen', '-j', 'fail-json']).finished;
 
       expect(process.exitCode).toBe(2);
       const parsed = JSON.parse(stderrOutput.trim());
