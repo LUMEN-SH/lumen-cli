@@ -61,7 +61,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config']).finished;
 
     expect(process.exitCode).toBeUndefined();
     expect(stdoutOutput).toContain('Configuration:');
@@ -77,7 +77,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config']);
+    await runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config']).finished;
 
     expect(process.exitCode).toBeUndefined();
     const parsed = JSON.parse(stdoutOutput.trim());
@@ -93,7 +93,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'architecture.preset']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'architecture.preset']).finished;
 
     expect(process.exitCode).toBeUndefined();
     expect(stdoutOutput.trim()).toBe(manifest.architecture.type || manifest.architecture.preset);
@@ -104,7 +104,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'paths']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'paths']).finished;
 
     expect(process.exitCode).toBeUndefined();
     const parsed = JSON.parse(stdoutOutput.trim());
@@ -117,7 +117,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'nonexistent.key']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config', 'get', 'nonexistent.key']).finished;
 
     expect(process.exitCode).toBe(1);
     expect(stderrOutput).toContain("Error: Key 'nonexistent.key' not found in configuration");
@@ -129,7 +129,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config', 'get', 'missing.key']);
+    await runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config', 'get', 'missing.key']).finished;
 
     expect(process.exitCode).toBe(1);
     const parsed = JSON.parse(stderrOutput.trim());
@@ -143,7 +143,7 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config', 'validate']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config', 'validate']).finished;
 
     expect(process.exitCode).toBeUndefined();
     expect(stdoutOutput.trim()).toBe('OK');
@@ -154,28 +154,28 @@ describe('lumen config command', () => {
     const manifest = validFixtures[0].manifest;
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(manifest, null, 2));
 
-    runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config', 'validate']);
+    await runCli(['node', 'lumen', '-c', tmpDir, '-j', 'config', 'validate']).finished;
 
     expect(process.exitCode).toBeUndefined();
     const parsed = JSON.parse(stdoutOutput.trim());
     expect(parsed).toEqual({ status: 'ok', valid: true });
   });
 
-  it('exits with code 2 when config is missing', () => {
-    runCli(['node', 'lumen', '-c', tmpDir, 'config']);
+  it('exits with code 2 when config is missing', async () => {
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config']).finished;
 
     expect(process.exitCode).toBe(2);
     expect(stderrOutput).toContain('Could not find lumen.config.json');
   });
 
-  it('exits with code 2 when validating missing config', () => {
-    runCli(['node', 'lumen', '-c', tmpDir, 'config', 'validate']);
+  it('exits with code 2 when validating missing config', async () => {
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config', 'validate']).finished;
 
     expect(process.exitCode).toBe(2);
     expect(stderrOutput).toContain('Could not find lumen.config.json');
   });
 
-  it('exits with code 2 and migration hint when reading v1 config', () => {
+  it('exits with code 2 and migration hint when reading v1 config', async () => {
     const v1Config = {
       framework: 'react',
       css: 'tailwind',
@@ -183,7 +183,7 @@ describe('lumen config command', () => {
     };
     fs.writeFileSync(path.join(tmpDir, 'lumen.config.json'), JSON.stringify(v1Config));
 
-    runCli(['node', 'lumen', '-c', tmpDir, 'config']);
+    await runCli(['node', 'lumen', '-c', tmpDir, 'config']).finished;
 
     expect(process.exitCode).toBe(2);
     expect(stderrOutput).toContain('docs/migration/v1-to-v2.md');
