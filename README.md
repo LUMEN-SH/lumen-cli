@@ -173,6 +173,21 @@ The generator inspects the target project's `package.json` dependencies:
 - **Axios**: If `axios` is in dependencies, the generator scans common project locations (such as `src/shared/lib/axios`, `src/lib/api`, or `src/api/client`) for an Axios instance to import with a relative path; if no custom instance is detected, it falls back to an `axios` import with a TODO hint.
 - **Fetch**: If Axios is not found, it checks for a custom API client module (e.g. `src/shared/lib/api` or `src/lib/api`). If none is present, standard `fetch` is used with a configurable `BASE_URL`.
 
+### `lumen generate page <name>`
+
+Scaffold a route page component (`<Name>Page`) for React + Vite projects:
+
+```bash
+lumen generate page settings
+lumen g page billing --register
+lumen g page dashboard --dry-run
+```
+
+- **Target Destination**: Emits `<Name>Page.tsx` (or `.jsx`) under `paths.pages` (`src/app/router` for feature-based architecture, `src/pages` for type-based architecture).
+- **Route Snippet**: Automatically discovers existing router files (`index.tsx`, `routes.tsx`, `router.tsx`) in `paths.pages` and prints the exact route import and route definition snippet.
+- **Auto-Registration**: Pass `--register` to automatically insert the route into the router file if a `// lumen:routes` marker comment is present.
+- **Next.js Projects**: Next.js App Router conventions are tracked in issue #32 and are not yet supported.
+
 ### `lumen generate store <name>`
 
 Generates an application state store tailored to your project's state library (automatically detected from `package.json`):
