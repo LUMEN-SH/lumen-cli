@@ -139,6 +139,21 @@ lumen config validate
 - **Collision Protection**: Existing files are never silently clobbered; the engine skips them by default unless `--force` is specified.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
 
+### `lumen generate page <name>`
+
+Scaffold a route page component (`<Name>Page`) for React + Vite projects:
+
+```bash
+lumen generate page settings
+lumen g page billing --register
+lumen g page dashboard --dry-run
+```
+
+- **Target Destination**: Emits `<Name>Page.tsx` (or `.jsx`) under `paths.pages` (`src/app/router` for feature-based architecture, `src/pages` for type-based architecture).
+- **Route Snippet**: Automatically discovers existing router files (`index.tsx`, `routes.tsx`, `router.tsx`) in `paths.pages` and prints the exact route import and route definition snippet.
+- **Auto-Registration**: Pass `--register` to automatically insert the route into the router file if a `// lumen:routes` marker comment is present.
+- **Next.js Projects**: Next.js App Router conventions are tracked in issue #32 and are not yet supported.
+
 ## Documentation & Roadmap
 
 
