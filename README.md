@@ -149,6 +149,25 @@ lumen config validate
 - **Safe Containment**: All generated targets are strictly checked to resolve within the project root, guarding against path traversal attempts.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
 
+### `lumen generate form <name>`
+
+Generate a validated React Hook Form component and matching Zod schema (`<Name>Form.tsx` and `<name>.schema.ts`, or JS equivalents):
+
+```bash
+lumen g form user-profile
+lumen g form login --feature auth
+lumen g form checkout --feature billing --service checkout
+lumen g form contact --dry-run
+```
+
+**Options:**
+- `--feature <feature>` — Place form under a feature module (`paths.features/<feature>/components`)
+- `--service <service>` — Wire `onSubmit` to a service module import
+- `--dry-run` — Preview file creations without writing to disk
+- `-f, --force` — Overwrite existing files
+- `-j, --json` — Output result as JSON
+
+
 ### `lumen generate feature <name>`
 
 Generates a domain feature module under `paths.features/<name>/` complete with `components/`, `hooks/`, `services/`, `types/`, and a public barrel export (`index.ts` / `index.js`).
