@@ -136,8 +136,25 @@ lumen config validate
 - **Path Mapping**: Generator destinations are resolved dynamically from `manifest.paths` (`paths.features`, `paths.components`, `paths.services`, `paths.hooks`, `paths.pages`, `paths.ui`), respecting architectural presets (`feature-based`, `type-based`, `hybrid`, `none`) without hardcoding paths.
 - **Language Detection**: Automatically matches template variants (`.ts`/`.tsx` vs `.js`/`.jsx`) against `tooling.language`.
 - **Safe Containment**: All generated targets are strictly checked to resolve within the project root, guarding against path traversal attempts.
-- **Collision Protection**: Existing files are never silently clobbered; the engine skips them by default unless `--force` is specified.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
+
+### `lumen generate feature <name>`
+
+Generates a domain feature module under `paths.features/<name>/` complete with `components/`, `hooks/`, `services/`, `types/`, and a public barrel export (`index.ts` / `index.js`).
+
+```bash
+lumen generate feature billing
+lumen g feature auth --dry-run
+lumen g feature checkout --with-tests
+lumen g feature dashboard --force
+```
+
+**Options:**
+- `--dry-run` — Preview file generation actions without modifying the filesystem
+- `--force` — Overwrite existing files instead of skipping
+- `--with-tests` — Generate starter `<Name>.test.tsx` / `<Name>.test.jsx` test if project uses `vitest`
+- `--with-store` — Hint to generate associated state store (`lumen g store <name>`)
+- `--with-service` — Hint to generate associated API service (`lumen g service <name>`)
 
 ## Documentation & Roadmap
 
