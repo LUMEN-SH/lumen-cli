@@ -1,5 +1,5 @@
 {
-  "name": "lumen-cli",
+  "name": "@lumen-sh/lumen",
   "version": "1.0.0-alpha.0",
   "description": "Day-to-day CLI for Lumen projects",
   "type": "module",
@@ -29,6 +29,9 @@
   ],
   "author": "Lumen Team",
   "license": "GPL-3.0-or-later",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "commander": "^12.1.0",
     "create-lumen": "2.0.0-alpha.2"

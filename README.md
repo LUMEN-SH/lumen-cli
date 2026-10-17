@@ -1,5 +1,7 @@
 # lumen-cli
 
+> npm package: **`@lumen-sh/lumen`** — binaries `lumen` and `lm`. (This repository keeps the name `lumen-cli`.)
+
 > Day-to-day CLI for Lumen projects.
 
 `lumen-cli` provides commands for project initialization, file generators, architectural validation, docs generation, and barrel synchronization.
@@ -8,10 +10,10 @@
 
 ```bash
 # Global installation
-npm install -g lumen-cli
+npm install -g @lumen-sh/lumen
 
 # Or run directly with npx
-npx lumen-cli --help
+npx @lumen-sh/lumen --help
 ```
 
 ## Command Aliases
@@ -98,7 +100,7 @@ Supports the same options as `lumen create`.
 The CLI discovers and loads the project's configuration from `lumen.config.json`:
 
 ```javascript
-import { readConfig, findConfigFile, ConfigError } from 'lumen-cli';
+import { readConfig, findConfigFile, ConfigError } from '@lumen-sh/lumen';
 // or from 'src/config/index.js'
 ```
 
