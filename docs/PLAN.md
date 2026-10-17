@@ -8,9 +8,9 @@ on GitHub.
 
 ```mermaid
 flowchart LR
-    M1["🧱 M1 · v1.0.0-alpha<br/>Core: CLI + config + create/init"]
+    M1["🧱 M1 · v1.0.0-alpha.1<br/>Core: CLI + config + create/init"]
     M2["🏗️ M2 · v1.0.0-alpha.2<br/>Generators"]
-    M3["🎨 M3 · v1.0.0-beta<br/>UI registry"]
+    M3["🎨 M3 · v1.0.0-beta.1<br/>UI registry"]
     M4["📚 M4 · v1.0.0-beta.2<br/>Docs engine"]
     M5["🩺 M5 · v1.0.0<br/>Doctor, barrels &amp; docs"]
 

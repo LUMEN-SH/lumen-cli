@@ -28,11 +28,16 @@ lm --help
 - `-h, --help` — Display help for command
 - `-V, --version` — Output the version number
 
+## Compatibility
+
+`lumen-cli` `v1` reads only the `create-lumen` **v2** manifest (`lumen.config.json`, `manifestVersion: 2`, incl. v2.1 `preset`/`validation`/`harness`). Developed against `create-lumen@2.0.0-alpha.2`; v1.x manifests are rejected.
+
 ## Documentation & Roadmap
 
 - [ROADMAP.md](./ROADMAP.md) — Milestone breakdown (M1–M5)
 - [PLAN.md](./docs/PLAN.md) — Visual architecture diagrams
 - [BRANCHING.md](./docs/BRANCHING.md) — Git workflow and release guide
+- [CHANGELOG.md](./CHANGELOG.md) — Release notes
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — Contribution guidelines
 
 ## License
