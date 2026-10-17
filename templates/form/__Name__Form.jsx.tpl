@@ -1,4 +1,4 @@
-{{clientDirective}}import React from 'react';
+{{clientDirective}}
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { {{nameCamel}}Schema } from './{{name}}.schema';

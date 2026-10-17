@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { {{Name}}Context } from './{{Name}}Context';
 
 export function {{Name}}Provider({ children }) {
