@@ -13,6 +13,9 @@ import { buildManifest } from 'create-lumen/src/manifest/emit.js';
 import { PRESETS } from 'create-lumen/src/cli-args.js';
 import { LumenError, EXIT } from './errors.js';
 
+const REACT_ARCHITECTURES = ['feature-based', 'type-based', 'none'];
+const NEXT_ARCHITECTURES = ['feature-based', 'hybrid', 'none'];
+
 export {
   TOOLING_LINTERS,
   TOOLING_FORMATTERS,
@@ -71,6 +74,22 @@ export function validateScaffolderFlags(options = {}) {
     throw new LumenError(
       `Invalid architecture preset "${chosenArch}". Allowed values: ${ARCHITECTURE_PRESETS.join(', ')}`,
       { code: EXIT.USER }
+    );
+  }
+
+  const frameworkName = options.framework || (options.template && PRESETS[options.template]?.frameworkName);
+  if (chosenArch !== undefined && frameworkName) {
+    const allowed = frameworkName === 'react' ? REACT_ARCHITECTURES : NEXT_ARCHITECTURES;
+    if (!allowed.includes(chosenArch)) {
+      throw new LumenError(
+        `Architecture "${chosenArch}" is not valid for framework "${frameworkName}" (allowed: ${allowed.join(', ')})`,
+        { code: EXIT.USER }
+      );
+    }
+  } else if (chosenArch === 'hybrid' && !frameworkName) {
+    throw new LumenError(
+      'Architecture "hybrid" is only valid for Next.js; React allows feature-based, type-based, none',
+      { code: EXIT.USER, hint: 'Pass --framework next, or choose another --arch.' }
     );
   }
 

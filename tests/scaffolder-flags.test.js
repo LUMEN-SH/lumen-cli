@@ -234,3 +234,18 @@ describe('scaffolder-flags module', () => {
     });
   });
 });
+
+describe('architecture/framework combos (#51)', () => {
+  it('rejects hybrid without a framework (React default)', () => {
+    expect(() => validateScaffolderFlags({ arch: 'hybrid' })).toThrow(/only valid for Next/);
+  });
+  it('rejects hybrid with react', () => {
+    expect(() => validateScaffolderFlags({ arch: 'hybrid', framework: 'react' })).toThrow(/not valid for framework "react"/);
+  });
+  it('rejects type-based with next', () => {
+    expect(() => validateScaffolderFlags({ arch: 'type-based', framework: 'next' })).toThrow(/not valid for framework "next"/);
+  });
+  it('accepts hybrid with next', () => {
+    expect(() => validateScaffolderFlags({ arch: 'hybrid', framework: 'next' })).not.toThrow();
+  });
+});
