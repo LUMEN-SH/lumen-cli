@@ -129,7 +129,18 @@ Validates the local `lumen.config.json` against schema and compatibility rules. 
 lumen config validate
 ```
 
+## Generators
+
+`lumen-cli` features a flexible code generator engine driven by the project's `lumen.config.json` manifest:
+
+- **Path Mapping**: Generator destinations are resolved dynamically from `manifest.paths` (`paths.features`, `paths.components`, `paths.services`, `paths.hooks`, `paths.pages`, `paths.ui`), respecting architectural presets (`feature-based`, `type-based`, `hybrid`, `none`) without hardcoding paths.
+- **Language Detection**: Automatically matches template variants (`.ts`/`.tsx` vs `.js`/`.jsx`) against `tooling.language`.
+- **Safe Containment**: All generated targets are strictly checked to resolve within the project root, guarding against path traversal attempts.
+- **Collision Protection**: Existing files are never silently clobbered; the engine skips them by default unless `--force` is specified.
+- **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
+
 ## Documentation & Roadmap
+
 
 - [ROADMAP.md](./ROADMAP.md) — Milestone breakdown (M1–M5)
 - [PLAN.md](./docs/PLAN.md) — Visual architecture diagrams
