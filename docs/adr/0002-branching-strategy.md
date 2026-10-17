@@ -36,7 +36,7 @@ from develop  integration v1        freeze + bump            tag v* + publish
 |--------|------|----------|------------|
 | `main` | Stable, `npm@latest` after `v1.0.0`, tags `v*`. | Permanent | Only via PR from `develop` (M5) or `hotfix/*` |
 | `develop` | Integration for `v1`. 4 devs merge here continuously. | Permanent | `feat/*`, `fix/*`, `release/*` |
-| `release/v1.0.0-alpha`, `...-beta`, `...-rc` | Freeze a version: bump `package.json`, `CHANGELOG.md`, only critical `fix/*`. | Ephemeral (days/weeks) | Cut from `develop`, merged back to `develop` |
+| `release/1.0.0-alpha.1`, `...-beta.1`, `...-rc.1` | Freeze a version: bump `package.json`, `CHANGELOG.md`, only critical `fix/*`. | Ephemeral (days/weeks) | Cut from `develop`, merged back to `develop` |
 | `feat/<scope>-<desc>` | Feature work | Ephemeral | Cut from `develop`, PR to `develop` |
 | `hotfix/<version>` | Emergency fix for `main` after `v1.0.0` | Ephemeral | Cut from `main`, PR to `main` + back-merge to `develop` |
 
@@ -47,7 +47,7 @@ Conventional Commits: `feat:`, `fix:`, `chore(release):`, `docs:`, `ci:`.
 - `patch` (`1.0.1`): `fix/*` only.
 - `minor` (`1.1.0`): additive, no CLI/config break.
 - `major` (`2.0.0`): CLI surface/config schema break.
-- Prereleases: `1.0.0-alpha` (M1), `1.0.0-alpha.2` (M2), `1.0.0-beta` (M3), `1.0.0-beta.2` (M4), `1.0.0` (M5). Published with `alpha`/`beta`/`rc`/`next`, `latest` for stable.
+- Prereleases: `1.0.0-alpha.1` (M1), `1.0.0-alpha.2` (M2), `1.0.0-beta.1` (M3), `1.0.0-beta.2` (M4), `1.0.0` (M5). Always numbered so `publish.yml` maps them to the right dist-tag. Published with `alpha`/`beta`/`rc`/`next`, `latest` for stable.
 
 ### Cross-repo coordination
 
@@ -58,13 +58,18 @@ Conventional Commits: `feat:`, `fix:`, `chore(release):`, `docs:`, `ci:`.
 ### CI mapping
 
 - `eslint.yml`: runs on `push` to `main`, `develop`, `release/**`, `hotfix/**` and on `PR` to `main`/`develop` (no-op until M1 #1 adds ESLint).
-- `publish.yml`: triggers on `push` to `main` and `tags v*`. Maps `package.json` version to `dist_tag` and publishes with `npm publish --tag <dist_tag>`; creates GitHub Release with `--prerelease` when `stable=false`.
+- `ci.yml`: lint + test + `npm publish --dry-run` on every push/PR.
+- `publish.yml`: triggers on `push` to `main` and `tags v*` (tags are cut on `release/*`). Maps `package.json` version to `dist_tag` and publishes with `npm publish --tag <dist_tag>`; creates GitHub Release with `--prerelease` when `stable=false`.
 
 ## Consequences
 
 - Same mental model in both repos — 4 devs can switch without relearning.
 - `main` stays clean, `develop` is the 4-dev integration point, `release/*` are short freezes.
 - `release/*` must be back-merged to `develop` immediately (branch protection).
+
+## Amendment (2026-10-16)
+
+Aligned with the flow `create-lumen` actually runs (its PRs #56, #58, #59): `develop` is the canonical branch; a version is frozen on `release/<version>` (no `v` prefix), tagged `v<version>` there, and back-merged to `develop` via a `chore: back-merge release/<version> into develop` PR. Stale `dev` and `release/v1.0.0` branches were deleted.
 
 ## Alternatives considered
 
@@ -75,5 +80,5 @@ Conventional Commits: `feat:`, `fix:`, `chore(release):`, `docs:`, `ci:`.
 ## References
 
 - Code: `package.json` (M1 #1), `.github/workflows/publish.yml`, `.github/workflows/eslint.yml`
-- Docs: `docs/ROADMAP.md`, `docs/PLAN.md`, `docs/BRANCHING.md`
+- Docs: `ROADMAP.md`, `docs/PLAN.md`, `docs/BRANCHING.md`
 - Issues: lumen-cli#1-#25, create-lumen#9, #13, #33

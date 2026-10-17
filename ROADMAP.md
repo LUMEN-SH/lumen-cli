@@ -14,16 +14,16 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 
 ---
 
-## 🧱 M1 · `v1.0.0-alpha` — Core: CLI + config + create/init
+## 🧱 M1 · `v1.0.0-alpha.1` — Core: CLI + config + create/init
 
 > **DoD:** `lumen` installs (ESM/bin), has a command framework with
-> help/version, reads `lumen.config.json` v2 (Zod, rejects v1),
+> help/version, reads `lumen.config.json` v2/v2.1 (Zod via `create-lumen`, rejects v1),
 > `lumen config` works, and `lumen create` / `lumen init` delegates to
 > `create-lumen@^2`. Result: `npx lumen create my-app` scaffolds a
 > project.
 
-- [ ] #1 Bootstrap lumen-cli package (ESM, bin, CI, publish)
-- [ ] #2 Command framework + per-command help/version
+- [x] #1 Bootstrap lumen-cli package (ESM, bin, CI, publish)
+- [~] #2 Command framework + per-command help/version
 - [ ] #3 Config reader: Zod schema v2 + strict v1 rejection
 - [ ] #4 `lumen config` command
 - [ ] #5 `lumen create` / `lumen init` delegate to `create-lumen@^2`
@@ -41,7 +41,7 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 - [ ] #13 `lumen g store <name>`: Zustand/Context scaffold
 - [ ] #14 `lumen g form <name>`: React Hook Form + Zod scaffold
 
-## 🎨 M3 · `v1.0.0-beta` — UI registry
+## 🎨 M3 · `v1.0.0-beta.1` — UI registry
 
 > **DoD:** `lumen g ui <name>` resolves from the Lumen Registry with a
 > shadcn fallback, and `lumen g ui theme-<name>` applies preset tokens.
@@ -72,7 +72,19 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 - [ ] #21 `lumen sync-barrels`: auto-maintain intermediate `index.ts`
 - [ ] #22 Docs: README + command reference
 
-> Tracker: **#23** 🧭 Backlog v1.0.0 (umbrella — no milestone).
+> `[~]` = partially landed (bootstrap in `develop`, rest pending). Tracker: **#23** 🧭 Backlog v1.0.0 (umbrella — no milestone).
+
+---
+
+## 📡 create-lumen status (2026-10-16)
+
+| create-lumen | Date | What it gives lumen-cli |
+|--------------|------|-------------------------|
+| `v2.0.0-alpha.0` | 2026-09-20 | Manifest v2, shared contract (cl#9), Zod validator + strict v1 rejection (cl#14), path mapping (cl#15), shared fixtures (cl#28), `--yes/--manifest/--template` (cl#29) → **unblocks lc#3, lc#5** |
+| `v2.0.0-alpha.1` | 2026-10-02 | Manifest **v2.1**: `architecture.preset` + `validation`, `harness.commands` (cl#52), `.lumen/` agent context (cl#54), drift gate (cl#55) |
+| `v2.0.0-alpha.2` | 2026-10-06 | Capabilities engine, fragment composition, `none`/`hybrid` architectures (cl#34), shadcn/ui (cl#33 → **unblocks lc#9**), Bootstrap dropped (cl#51) |
+
+Still open upstream: Next.js (cl#8, #18–#22, beta) — blocks the Next.js variants of lc#11/lc#14.
 
 ---
 
