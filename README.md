@@ -149,6 +149,34 @@ lumen config validate
 - **Safe Containment**: All generated targets are strictly checked to resolve within the project root, guarding against path traversal attempts.
 - **Dry-Run & JSON**: Supports `--dry-run` to preview file operations without writing to disk, and `--json` for structured automation pipelines.
 
+### `lumen generate store <name>`
+
+Generates an application state store tailored to your project's state library (automatically detected from `package.json`):
+- **`zustand`**: Typed store hook `use<Name>Store` with actions, state, and optional `--persist` middleware.
+- **`@reduxjs/toolkit`**: Redux slice (`createSlice`), exported actions, and typed hook integration guide.
+- **Default (none)**: Fast Refresh compliant React Context, Provider (`<Name>Provider`), and custom hook (`use<Name>()`) across separate files with a barrel export.
+
+```bash
+# Generate shared store (derived from paths.services: <dirname>/stores)
+lumen g store auth
+
+# Generate zustand store with persistence middleware
+lumen g store settings --persist
+
+# Generate feature-scoped store (paths.features/<feature>/store)
+lumen g store checkout --feature cart
+
+# Preview or force overwrite
+lumen g store auth --dry-run
+lumen g store auth --force
+```
+
+**Options:**
+- `--feature <name>` — Generate store within a feature directory (`paths.features/<feature>/store`)
+- `--persist` — Add zustand persist middleware (valid only when `zustand` is detected)
+- `--dry-run` — Preview generation plan without writing to disk
+- `--force` — Overwrite existing files
+
 ### `lumen generate form <name>`
 
 Generate a validated React Hook Form component and matching Zod schema (`<Name>Form.tsx` and `<name>.schema.ts`, or JS equivalents):

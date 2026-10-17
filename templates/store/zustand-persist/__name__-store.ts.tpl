@@ -1,0 +1,23 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export interface {{Name}}State {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+
+export const use{{Name}}Store = create<{{Name}}State>()(
+  persist(
+    (set) => ({
+      count: 0,
+      increment: () => set((state) => ({ count: state.count + 1 })),
+      decrement: () => set((state) => ({ count: state.count - 1 })),
+      reset: () => set({ count: 0 }),
+    }),
+    {
+      name: '{{nameKebab}}-storage',
+    }
+  )
+);
