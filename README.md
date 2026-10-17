@@ -11,7 +11,7 @@
 npm install -g lumen-cli
 
 # Or run directly with npx
-npx lumen --help
+npx lumen-cli --help
 ```
 
 ## Command Aliases
