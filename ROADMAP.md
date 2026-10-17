@@ -25,21 +25,21 @@ pipeline) live in [`docs/PLAN.md`](./docs/PLAN.md).
 - [x] #1 Bootstrap lumen-cli package (ESM, bin, CI, publish)
 - [x] #2 Command framework + per-command help/version
 - [x] #3 Config reader: Zod schema v2 + strict v1 rejection
-- [ ] #4 `lumen config` command
-- [ ] #5 `lumen create` / `lumen init` delegate to `create-lumen@^2`
-- [ ] #6 Forward tooling flags to the scaffolder
+- [x] #4 `lumen config` command
+- [x] #5 `lumen create` / `lumen init` delegate to `create-lumen@^2`
+- [x] #6 Forward tooling flags to the scaffolder
 
 ## 🏗️ M2 · `v1.0.0-alpha.2` — Generators
 
 > **DoD:** `lumen g feature|page|service|store|form <name>` writes valid
 > files into a project that has a v2 manifest.
 
-- [ ] #7 Generator core: template engine + manifest path mapping
-- [ ] #8 `lumen g feature <name>`: domain module + barrel
-- [ ] #11 `lumen g page <name>`: route scaffold (Vite + Next.js)
-- [ ] #12 `lumen g service <name>`: typed CRUD service client
-- [ ] #13 `lumen g store <name>`: Zustand/Context scaffold
-- [ ] #14 `lumen g form <name>`: React Hook Form + Zod scaffold
+- [x] #7 Generator core: template engine + manifest path mapping
+- [x] #8 `lumen g feature <name>`: domain module + barrel
+- [x] #11 `lumen g page <name>`: route scaffold (Vite + Next.js)
+- [x] #12 `lumen g service <name>`: typed CRUD service client
+- [x] #13 `lumen g store <name>`: Zustand/Context scaffold
+- [x] #14 `lumen g form <name>`: React Hook Form + Zod scaffold
 
 ## 🎨 M3 · `v1.0.0-beta.1` — UI registry
 
