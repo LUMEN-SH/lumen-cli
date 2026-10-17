@@ -1,8 +1,10 @@
-export class ConfigError extends Error {
+import { LumenError, EXIT } from '../errors.js';
+
+export class ConfigError extends LumenError {
   constructor(message, options = {}) {
-    super(message, options);
+    super(message, { code: EXIT.CONFIG, ...options });
     this.name = 'ConfigError';
-    this.code = 'CONFIG';
-    this.exitCode = 2;
+    this.exitCode = EXIT.CONFIG;
   }
 }
+
