@@ -39,6 +39,7 @@ lumen create my-app -y
 lumen create my-app --template react-ts
 lumen create my-app --arch feature-based
 lumen create my-app --manifest ./lumen.config.json
+lumen create my-app -y --linter oxlint --formatter oxfmt
 ```
 
 **Options:**
@@ -47,6 +48,13 @@ lumen create my-app --manifest ./lumen.config.json
 - `-t, --template <preset>` — Template preset (e.g. `react-ts`, `react-js`, `react-type-ts`, etc.)
 - `-f, --framework <name>` — Target framework
 - `-a, --arch <arch>` / `--architecture <arch>` — Architecture preset (`feature-based`, `type-based`, `none`, `hybrid`)
+- `--linter <eslint|oxlint|biome|none>` — Linting tool
+- `--formatter <prettier|oxfmt|none>` — Code formatter
+- `--language <ts|js>` — Project language
+- `--styling <tailwind|none>` — Styling engine
+- `--ui <shadcn|none>` — UI component kit (requires `--styling tailwind`)
+
+When tooling flags are supplied, `lumen` builds and validates an inline manifest and passes it to the scaffolder via `--manifest`. If combined with an existing manifest (`-m`), flags take precedence over the base manifest values.
 
 ### `lumen init`
 
@@ -56,7 +64,10 @@ Initialize a Lumen project in the current directory (or prompt for name interact
 lumen init
 lumen init -y
 lumen init --template react-ts
+lumen init -y --linter oxlint --formatter oxfmt
 ```
+
+Supports the same options as `lumen create`.
 
 ### Global Options
 

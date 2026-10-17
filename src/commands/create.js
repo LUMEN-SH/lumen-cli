@@ -1,4 +1,5 @@
 import { runScaffolder } from '../scaffolder.js';
+import { resolveScaffolderOptions } from '../scaffolder-flags.js';
 
 function buildForwardArgs(name, options) {
   const args = [];
@@ -41,6 +42,11 @@ export function registerCreate(program) {
     .option('-f, --framework <name>', 'target framework')
     .option('-a, --arch <arch>', 'architecture preset')
     .option('--architecture <arch>', 'architecture preset (alias for --arch)')
+    .option('--linter <linter>', 'linting tool (eslint, oxlint, biome, none)')
+    .option('--formatter <formatter>', 'code formatter (prettier, oxfmt, none)')
+    .option('--language <language>', 'project language (ts, js)')
+    .option('--styling <engine>', 'styling engine (tailwind, none)')
+    .option('--ui <kit>', 'ui component kit (shadcn, none)')
     .addHelpText(
       'after',
       `
@@ -49,12 +55,14 @@ Examples:
   $ lumen create my-app -y
   $ lumen create my-app --template react-ts
   $ lumen create my-app --arch feature-based
-  $ lumen create my-app --manifest ./lumen.config.json`
+  $ lumen create my-app --manifest ./lumen.config.json
+  $ lumen create my-app -y --linter oxlint --formatter oxfmt`
     )
     .action(async (name, options) => {
       const globalOpts = program.opts ? program.opts() : {};
       const cwd = globalOpts.cwd || process.cwd();
-      const forwardArgs = buildForwardArgs(name, options);
+      const resolvedOptions = resolveScaffolderOptions(options, { cwd });
+      const forwardArgs = buildForwardArgs(name, resolvedOptions);
       const exitCode = await runScaffolder(forwardArgs, { cwd });
       process.exitCode = exitCode;
     });
@@ -68,6 +76,11 @@ Examples:
     .option('-f, --framework <name>', 'target framework')
     .option('-a, --arch <arch>', 'architecture preset')
     .option('--architecture <arch>', 'architecture preset (alias for --arch)')
+    .option('--linter <linter>', 'linting tool (eslint, oxlint, biome, none)')
+    .option('--formatter <formatter>', 'code formatter (prettier, oxfmt, none)')
+    .option('--language <language>', 'project language (ts, js)')
+    .option('--styling <engine>', 'styling engine (tailwind, none)')
+    .option('--ui <kit>', 'ui component kit (shadcn, none)')
     .addHelpText(
       'after',
       `
@@ -76,12 +89,14 @@ Examples:
   $ lumen init -y
   $ lumen init --template react-ts
   $ lumen init --arch feature-based
-  $ lumen init --manifest ./lumen.config.json`
+  $ lumen init --manifest ./lumen.config.json
+  $ lumen init -y --linter oxlint --formatter oxfmt`
     )
     .action(async (options) => {
       const globalOpts = program.opts ? program.opts() : {};
       const cwd = globalOpts.cwd || process.cwd();
-      const forwardArgs = buildForwardArgs(null, options);
+      const resolvedOptions = resolveScaffolderOptions(options, { cwd });
+      const forwardArgs = buildForwardArgs(null, resolvedOptions);
       const exitCode = await runScaffolder(forwardArgs, { cwd });
       process.exitCode = exitCode;
     });
