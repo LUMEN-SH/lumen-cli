@@ -95,6 +95,40 @@ import { readConfig, findConfigFile, ConfigError } from 'lumen-cli';
 - `readConfig({ cwd })`: Locates `lumen.config.json`, parses and validates the manifest against `manifestSchemaV2`, normalizes v2.1 fields (`architecture.preset`, `validation`, `harness.commands`, `agentDocs`), resolves generator paths via `resolvePaths`, and returns `{ manifest, paths, root, file }`.
 - Throws `ConfigError` (code `CONFIG`, exitCode `2`) if the config file is missing, invalid JSON, or fails schema validation. Any legacy v1 manifest is rejected with an actionable migration pointer.
 
+## Config Command
+
+Inspect, query, and validate your Lumen configuration via the CLI:
+
+### `lumen config`
+Prints a human-readable summary of the resolved configuration, including framework, styling, architecture preset and validation mode, UI kit, tooling, and resolved file generator paths.
+
+```bash
+lumen config
+```
+
+Pass `-j` or `--json` to output the full `{ file, root, manifest, paths }` payload:
+
+```bash
+lumen config --json
+```
+
+### `lumen config get <dotted.path>`
+Retrieves a specific configuration value using dot notation (e.g. `architecture.preset`, `paths.features`, or `framework`).
+
+```bash
+lumen config get architecture.preset
+lumen config get paths.features
+```
+
+If the key does not exist, the command exits with code `1` and prints a helpful hint. Objects are printed as formatted JSON.
+
+### `lumen config validate`
+Validates the local `lumen.config.json` against schema and compatibility rules. Exits with code `0` and prints `OK` on success, or exits with code `2` with an actionable `ConfigError` if invalid or missing.
+
+```bash
+lumen config validate
+```
+
 ## Documentation & Roadmap
 
 - [ROADMAP.md](./ROADMAP.md) — Milestone breakdown (M1–M5)

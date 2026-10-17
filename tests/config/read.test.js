@@ -10,7 +10,7 @@ describe('ConfigError', () => {
     const err = new ConfigError('Invalid configuration');
     expect(err).toBeInstanceOf(Error);
     expect(err.name).toBe('ConfigError');
-    expect(err.code).toBe('CONFIG');
+    expect(err.code).toBe(2);
     expect(err.exitCode).toBe(2);
     expect(err.message).toBe('Invalid configuration');
   });

@@ -92,7 +92,7 @@ describe('Drift Gate (#29) - create-lumen shared fixtures', () => {
           } catch (err) {
             threw = true;
             expect(err).toBeInstanceOf(ConfigError);
-            expect(err.code).toBe('CONFIG');
+            expect(err.code).toBe(2);
             expect(err.exitCode).toBe(2);
             expect(err.message.length).toBeGreaterThan(10);
 
